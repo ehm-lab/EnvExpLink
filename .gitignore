@@ -1,3 +1,7 @@
+# mapview outputs
+/mapviews/**/
+!/mapviews/*
+
 # History files
 .Rhistory
 .Rapp.history
