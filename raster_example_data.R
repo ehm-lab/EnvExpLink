@@ -1,5 +1,6 @@
 ################################################################################
 # FOR EXPOSURE LINKAGE REPRODUCIBLE EXAMPLE
+# RASTER DATA SETTING
 ################################################################################
 #
 # CROP Southampton + Portsmouth + Isle of Wight area around 
@@ -29,4 +30,6 @@ for (i in seq(seq_years)) {
 }
 
 # # visualize the area that is saved above
-# plot_aoi(centr, crscode = 27700, buffer_size, rasterpaths[1],ndays = 1)
+plot_aoi(centr, crscode = 27700, buffer_size, rasterpaths[1],ndays = 1)
+
+
