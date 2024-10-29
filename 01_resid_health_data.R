@@ -46,7 +46,6 @@ outcomes<-data.frame(
                    "27/04/2019"),format ="%d/%m/%Y")
 )
 
-# Check if "data" directory exists; if not, create it
 if (!dir.exists("data")) dir.create("data")
 
 # Write CSV files
@@ -54,3 +53,4 @@ write.csv(cohortinfo, "data/cohortinfo.csv", row.names = FALSE)
 write.csv(residhist, "data/residhist.csv", row.names = FALSE)
 write.csv(outcomes, "data/outhosp.csv", row.names = FALSE)
 
+rm(cohortinfo, outcomes, residhist)

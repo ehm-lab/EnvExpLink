@@ -1,6 +1,7 @@
-# mapview outputs
-/mapviews/**/
-!/mapviews/*
+# DELETE DATA AND OUTPUT IGNORE LINES TO SYNC OUTPUTS TO YOUR GITHUB REPOSITORY
+
+data/*.csv
+output/
 
 # History files
 .Rhistory

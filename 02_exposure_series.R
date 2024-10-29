@@ -1,12 +1,5 @@
 ################################################################################
-# IGNORE 
-#
-# AUTOMATE THE REPREX BUILDING GIVEN PARAMTERS:
-# LOCATION - VIA A CENTROID
-#   tasks: create square area, save pm25 rasters
-# N PARTICIPANTS - VIA N
-#   tasks: assign random addresses
-# 
+# MAIN SCRIPT
 ################################################################################
 
 # LOAD PACKAGES
@@ -39,7 +32,7 @@ locdata <- read.csv("data/residhist.csv",
 # NB: .bincode IS THE BARE-BONES VERSION OF cut
 # - period IS THE FULL PERIOD (E.G., A YEAR)
 # - dates ARE THE STARTING DATES A SUBJECT STARTS LIVING AT AN ADDRESS
-# - loc IS THE CORRESPONDING ADDRESS
+# - loc IS THE CORRESPONDING ADDRESS ID
 # - maxdate  IS THE RIGHT BOUNDARY (USUALLY SET HIGH TO INCLUDE THE WHOLE PERIOD)
 floc <- function(period, dates, loc, maxdate=as.Date("2099-12-31")) {
   loc[.bincode(period, c(dates, maxdate), right=F)]
@@ -77,26 +70,10 @@ for (i in seq(seqyear)) {
   
 }
 
-outdata <- rbindlist(outlist)
+exp_series <- rbindlist(outlist)
 
-write.csv(outdata,"output/exposure_series.csv",row.names = FALSE)
+if (!dir.exists("output")) dir.create("output")
 
-################################################################################
-# SKETCH VISUALISATIONS
+write.csv(exp_series,"output/exposure_series.csv",row.names = FALSE)
 
-library(ggplot2)
-
-ggplot(outdata) +
-  geom_line(aes(x=date,y=pm25,color=as.factor(locid))) +
-  facet_wrap(vars(id), dir="v", scales = "free")
-
-ggplot(locdata) +
-  geom_point(aes(easting, northing, color=as.factor(id)))+
-  coord_fixed()
-
-library(sf);library(mapview)  
-
-locdsf <- st_as_sf(locdata, coords = c("easting","northing"), crs=27700)
-locdsf$id <- as.factor(locdsf$id)
-
-mapview(rst, alpha=0.6)+ mapview(locdsf, zcol="id")
+rm(i, outlist, exp, pathexp, digit, outdir, period, subdata, data, matexp, matind)
