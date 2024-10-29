@@ -26,6 +26,10 @@ area <- aoi_square(centr, 27700, buffer_size)
 for (i in seq(seq_years)) {
   r <- terra::rast(rasterpaths[i])
   raoi <- terra::crop(r,area)
+  
+  # Check if "data" directory exists; if not, create it
+  if (!dir.exists("data")) dir.create("data")
+  
   writeCDF(raoi, paste0("data/pm25_area_",seq_years[i],".nc"))
 }
 
