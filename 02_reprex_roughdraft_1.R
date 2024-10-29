@@ -71,6 +71,10 @@ for (i in seq(seqyear)) {
 }
 
 outdata <- rbindlist(outlist)
+dir <- file.path("a_directory", "another_directory") 
+if (!dir.exists(dir)) dir.create(dir)
+
+saveRDS(my_list, file = file.path(dir, "my_file.RDS"))
 
 write.csv(outdata,"output/exposure_series.csv",row.names = FALSE)
 
@@ -93,3 +97,6 @@ locdsf <- st_as_sf(locdata, coords = c("easting","northing"), crs=27700)
 locdsf$id <- as.factor(locdsf$id)
 
 mapview(rst, alpha=0.6)+ mapview(locdsf, zcol="id")
+
+r <- plot(terra::rast("data/pm25_area_2017.nc")[[1]])
+plot(sf::st_as_sf(residhist, coords= c("easting","northing"), crs=27700)$geometry, add=TRUE)

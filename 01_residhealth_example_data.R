@@ -3,9 +3,11 @@
 # RESID + HEALTH DATA SETTING
 ################################################################################
 
+library(data.table)
+library(terra)
 
 # COHORT INFO
-cohortinfo<-data.frame(
+cohortinfo <- data.frame(
   id = 1:3,
   enroldate = as.Date(c("03/02/2017", "06/04/2018",
                         "25/01/2017"),format ="%d/%m/%Y"),
@@ -44,6 +46,11 @@ outcomes<-data.frame(
                    "27/04/2019"),format ="%d/%m/%Y")
 )
 
-write.csv(cohortinfo,"data/cohortinfo.csv", row.names = F)
-write.csv(residhist,"data/residhist.csv", row.names = F)
-write.csv(outcomes,"data/outhosp.csv", row.names = F)
+# Check if "data" directory exists; if not, create it
+if (!dir.exists("data")) dir.create("data")
+
+# Write CSV files
+write.csv(cohortinfo, "data/cohortinfo.csv", row.names = FALSE)
+write.csv(residhist, "data/residhist.csv", row.names = FALSE)
+write.csv(outcomes, "data/outhosp.csv", row.names = FALSE)
+
