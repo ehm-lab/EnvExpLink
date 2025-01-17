@@ -1,12 +1,27 @@
-librarian::shelf(sf, mapgl, terra, dplyr, tidyr, ggplot2, ggh4x, lubridate)
+################################################################################
+# R code example accompanying:
+#
+#  Vanoli J, et al. Reconstructing individual-level exposures in cohort analyses 
+#    of environmental risks: an example with the UK Biobank. J Expo Sci Environ 
+#    Epidemiol. 2024 Jan 8.
+#  https://www.nature.com/articles/s41370-023-00635-w
+################################################################################
 
-# load residhist object in scirpt 1
+################################################################################
+# PLOT TO VISUALISE PARTICIPANT MOVES AND EXPOSURE SERIES
+################################################################################
+# install.packages("librarian")
+librarian::shelf(
+  sf , mapgl, terra, dplyr, tidyr, ggplot2, ggh4x, lubridate
+)
 
-# 1. map of all points
-reshist <- st_as_sf(residhist, coords=c("easting","northing"), crs=27700) |> 
+# LOAD ADDRESS/LOCATION DATA MAKE INTO SPATIAL FEATURES
+reshist <- read.csv("data/residhist.csv", 
+                    colClasses = c("character","character","Date","Date","integer","integer")) |>
+  st_as_sf(coords=c("easting","northing"), crs=27700) |> 
   st_transform(4326)
-reshist$moveord <- c(1,2,3,1,2,1,2,3)
 
+# MAP ID RESIDENCES
 all_points <- maplibre(center=c(-1.26,50.78), zoom=9) |>
   add_circle_layer(
     "reslocs",
@@ -15,128 +30,144 @@ all_points <- maplibre(center=c(-1.26,50.78), zoom=9) |>
     circle_color="white",
     circle_stroke_color=match_expr(
       column="id",
-      values=c(1,2,3),
+      values=c("a","b","c"),
       stops=c("#ff0000","#00ff00","#0000ff"),
       default="#cccccc"
     ),
-    circle_stroke_width=3
+    circle_stroke_width=2
   ) |>
   add_symbol_layer(
-    id="moveord",
+    id="idloc",
     source=reshist,
     text_color="black",
     text_opacity=1,
-    text_field=get_column("moveord")
+    text_size = 12,
+    text_field=get_column("idloc")
   )
 
-# 2. map for subject 1
-id1_locs <- reshist[reshist$id==1,]
+# MAP AND EXPOSURE SERIES FOR ID "a" 
+ida_locs <- reshist[reshist$id=="a",]
 
-subject1 <- maplibre(center=c(-1.26,50.78), zoom=9) |>
+locs_a <- maplibre(center=c(-1.26,50.78), zoom=9) |>
   add_circle_layer(
     "reslocs",
-    source=id1_locs,
+    source=ida_locs,
     circle_radius=9,
     circle_color="white",
     circle_stroke_color=match_expr(
-      column="moveord",
-      values=c(1,2,3),
-      stops=c("pink","lightgreen","lightblue"),
+      column="idloc",
+      values=c("a1","a2","a3"),
+      # stops=c("pink","lightgreen","lightblue"),
+      stops=c("#FFA500","#8000FF","#00D7D7"),
       default="#cccccc"
     ),
-    circle_stroke_width=3
+    circle_stroke_width=2
   ) |>
   add_symbol_layer(
-    id="moveord",
-    source=id1_locs,
+    id="idloc",
+    source=ida_locs,
     text_color="black",
     text_opacity=1,
-    text_field=get_column("moveord")
+    text_size = 12,
+    text_field=get_column("idloc")
   )
 
-# unified extraction for 2017, 2018, 2019
-get_ts_data <- function(year, locs) {
+# EXTRACT VALUES AT ALL LOCATIONS 
+get_PM_data <- function(year, locs) {
   file <- paste0("data/pm25_area_", year, ".nc")
-  terra::extract(rast(file), locs) |>
+  r <- rast(file)
+  # match projections
+  if (!st_crs(locs)==st_crs(r)) {locs<-st_transform(locs,st_crs(r))}
+  xtr <- terra::extract(r, locs)
+  ts <- xtr |> 
     pivot_longer(cols=-ID) |>
-    rename(location=ID, value=value, raw_date=name) |>
+    rename(location=ID, value=value) |>
     mutate(year=year)
 }
 
-id1_extracted <- lapply(2017:2019, get_ts_data, locs=id1_locs) |> bind_rows()
+ida_extracted <- lapply(2017:2019, get_PM_data, locs=ida_locs) |>  bind_rows()
 
-# 3.
-
-# 4. combined ts (2017-01-01 through 2019-12-31)
-# unify real dates
+# OBJECTS FOR PLOTS AND PLOT THEMING 
 dates <- seq(as.Date("2017-01-01"), as.Date("2019-12-31"), by="day")
-datens <- seq(1:length(dates)*3)
 
-id1_full <- id1_extracted |>
-  arrange(location, year, raw_date) |>
+# PM SERIES AT ALL ID A LOCATIONS
+ida_full <- ida_extracted |>
   group_by(location) |>
   mutate(
     date=dates, 
-    location_label=paste0("loc. ", location)
+    location_label=paste0("Loc. ", location)
   ) |>
   ungroup()
 
-shading2 <- id1_locs |>
-  select(xmin=startdate, xmax=enddate, location=moveord) |>
+# shading and facet labels
+residence_periods <- ida_locs |>
+  select(xmin=startdate, xmax=enddate, location) |>
   mutate(
     xmin=c(as.Date("2017-01-01"), xmin[-1]),
-    location_label=c("loc. 1","loc. 2","loc. 3")
+    location_label=paste0("Loc. ", location)
   )
-stripbckgs <- list(element_rect(fill = "pink"),element_rect(fill = "lightgreen"),element_rect(fill = "lightblue"))
-# can also plot and save separately to compose in a graphic
-locs_subj1_year_series <- ggplot() +
+strip_custom <- strip_themed(
+  background_x = list(element_rect(fill = "#FFA500"),
+                      element_rect(fill = "#8000FF"),
+                      element_rect(fill = "#00D7D7")),
+  text_x = element_text(size = 12, face = "bold", color = "black")
+)
+
+locs_a_ts <- ggplot() +
   geom_rect(
-    data=shading2,
+    data=residence_periods,
     aes(xmin=xmin, xmax=xmax, ymin=-Inf, ymax=Inf, group=location_label),
     fill="lightgrey", alpha=0.5, inherit.aes=FALSE
   ) +
   geom_line(
-    data=id1_full,
+    data=ida_full,
     aes(x=date, y=value),
     inherit.aes=FALSE
   ) +
-  facet_wrap2(~location_label, dir="v", strip=strip_themed(background_x=stripbckgs)) +
-  theme_bw()
-
-
-# 5. exposure history
-id1_exp <- id1_full %>%
-  filter(
-    (location_label == "loc. 1" & date <= "2018-04-11") |
-      (location_label == "loc. 2" & date > "2018-04-11" & date <= "2019-02-19") |
-      (location_label == "loc. 3" & date > "2019-02-19" & date <= "2019-08-24")
+  facet_wrap2(~location_label, dir="v", strip=strip_custom) +
+  theme_bw() +
+  labs(
+    x = "Date",
+    y = expression(PM[2.5]  (~ mu*g/m^3))
   )
 
-subj1_exps <- ggplot() +
+# ID A PM EXPOSURE SERIES
+ida_exp <- ida_full %>%
+  filter(
+    (location_label == "Loc. 1" & date <= "2018-04-11") |
+      (location_label == "Loc. 2" & date > "2018-04-11" & date <= "2019-02-19") |
+      (location_label == "Loc. 3" & date > "2019-02-19" & date <= "2019-08-24")
+  )
+
+a_exps <- ggplot() +
   geom_rect(
-    data=shading2,
+    data=residence_periods,
     aes(xmin=xmin, xmax=xmax, ymin=-Inf, ymax=Inf, fill=location_label),
     alpha=0.5
   ) +
   geom_line(
-    data=id1_exp,
+    data=ida_exp,
     aes(x=date, y=value),
     color="black"
   ) +
   scale_fill_manual(values=c(
-    "loc. 1"="pink",
-    "loc. 2"="lightgreen",
-    "loc. 3"="lightblue"
+    "Loc. 1"="#FFA500",
+    "Loc. 2"="#8000FF",
+    "Loc. 3"="#00D7D7"
   )) +
-  theme_bw()
+  theme_bw() +
+  labs(
+    x = "Date",
+    y = expression(PM[2.5]  (~ mu*g/m^3))
+  )
 
+# OUTPUTS
 
-# ouptuts
-
+# MAP OF ID LOCATIONS (opens in viewer)
 all_points
-
-subject1
-
-locs_subj1_year_series
-
-subj1_exps
+# MAP OF LOCATIONS FOR ID A (opens in viewer)
+locs_a
+# FULL PM SERIES AT ALL ID A RESIDENCES
+locs_a_ts
+# COMBINED ID A EXPOSURE SERIES
+a_exps
