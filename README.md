@@ -11,8 +11,8 @@ Vanoli, J., Mistry, M.N., De La Cruz Libardi, A. et al. Reconstructing individua
 This work was supported by the Medical Research Council-UK (Grant IDs: MR/Y003330/1 and MR/R013349/1), the European Union’s Horizon 2020 Project Exhaustion (Grant ID: 820655), Nagasaki University “Doctoral Program for World-leading Innovative and Smart Education” for Global Health (WISE), KENKYU SHIDO KEIHI (“the Research Grant”) and KYOIKU KENKYU SHIEN KEIHI (“the Stipend”).
 
 ### R code
-The series of scripts demonstrate the a . Specifically:
+The series of scripts demonstrate the environmental exposure linkage carried out in the UK Biobank . Specifically:
 
-- 01_resid_health_data.R Creates the simulated study participant and location data  
+- 01_resid_health_data.R defines a sample of individuals with information including their 
 - 02_exposure_series.R Carries out the linkage of environmental data and participant locations
 - 03_plots.R Plots the participant location and linked exposure series  
