@@ -10,9 +10,13 @@ Vanoli, J., Mistry, M.N., De La Cruz Libardi, A. et al. Reconstructing individua
 
 This work was supported by the Medical Research Council-UK (Grant IDs: MR/Y003330/1 and MR/R013349/1), the European Union’s Horizon 2020 Project Exhaustion (Grant ID: 820655), Nagasaki University “Doctoral Program for World-leading Innovative and Smart Education” for Global Health (WISE), KENKYU SHIDO KEIHI (“the Research Grant”) and KYOIKU KENKYU SHIEN KEIHI (“the Stipend”).
 
-### R code
-The series of scripts demonstrate the environmental exposure linkage carried out in the UK Biobank . Specifically:
+### Folders
 
-- 01_resid_health_data.R defines a sample of individuals with information including their 
-- 02_exposure_series.R Carries out the linkage of environmental data and participant locations
-- 03_plots.R Plots the participant location and linked exposure series  
+- *data*: it contains the daily exposure predictions of $\text{PM}_{2.5}$ for the entire UK over a 1x1 km grid split in yearly datasets including 2017, 2018 and 2019. The datasets were produced using a method described in a previously published work ([freely available here](https://www.sciencedirect.com/science/article/pii/S1309104224002496?via%3Dihub)) but the same process can be performed with any other environmental exposure dataset with similar features by adpating the the R code (particularly 02_exposure_series.R).
+
+### R code 
+
+- `01_resid_health_data.R`: the script defines sample datasets of individuals including information regarding residential histories located in a specific UK region (for graphical purposes)
+- `02_exposure_series.R`: the script produces the linkage between residential histories and exposure series following step 1) and 2) of the article.
+- `03_plots.R`: the script produces the following graphs: a map of the locations for all the subjects, a map for the residential locations corresponding with subject A, a plot of the full $\text{PM}_{2.5}$ series at all the residential locations for subject A and a plot of the final exposure series for subject A (step 2 of the article).
+
