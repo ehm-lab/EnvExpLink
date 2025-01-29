@@ -10,6 +10,8 @@
 ################################################################################
 # PLOT TO VISUALISE PARTICIPANT MOVES AND EXPOSURE SERIES
 ################################################################################
+
+# LOAD PACKAGES
 # install.packages("librarian")
 librarian::shelf(
   sf , mapgl, terra, dplyr, tidyr, ggplot2, ggh4x, lubridate
@@ -17,7 +19,7 @@ librarian::shelf(
 
 # LOAD ADDRESS/LOCATION DATA MAKE INTO SPATIAL FEATURES
 reshist <- read.csv("data/residhist.csv", 
-                    colClasses = c("character","character","Date","Date","integer","integer")) |>
+  colClasses = c("character","character","Date","Date","integer","integer")) |>
   st_as_sf(coords=c("easting","northing"), crs=27700) |> 
   st_transform(4326)
 
@@ -47,7 +49,6 @@ all_points <- maplibre(center=c(-1.26,50.78), zoom=9) |>
 
 # MAP AND EXPOSURE SERIES FOR ID "a" 
 ida_locs <- reshist[reshist$id=="a",]
-
 locs_a <- maplibre(center=c(-1.26,50.78), zoom=9) |>
   add_circle_layer(
     "reslocs",
@@ -84,7 +85,6 @@ get_PM_data <- function(year, locs) {
     rename(location=ID, value=value) |>
     mutate(year=year)
 }
-
 ida_extracted <- lapply(2017:2019, get_PM_data, locs=ida_locs) |>  bind_rows()
 
 # OBJECTS FOR PLOTS AND PLOT THEMING 
@@ -108,8 +108,8 @@ residence_periods <- ida_locs |>
   )
 strip_custom <- strip_themed(
   background_x = list(element_rect(fill = "#FFA500"),
-                      element_rect(fill = "#8000FF"),
-                      element_rect(fill = "#00D7D7")),
+    element_rect(fill = "#8000FF"),
+    element_rect(fill = "#00D7D7")),
   text_x = element_text(size = 12, face = "bold", color = "black")
 )
 
@@ -165,9 +165,12 @@ a_exps <- ggplot() +
 
 # MAP OF ID LOCATIONS (opens in viewer)
 all_points
+
 # MAP OF LOCATIONS FOR ID A (opens in viewer)
 locs_a
+
 # FULL PM SERIES AT ALL ID A RESIDENCES
 locs_a_ts
+
 # COMBINED ID A EXPOSURE SERIES
 a_exps
