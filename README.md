@@ -12,10 +12,10 @@ This work was supported by the Medical Research Council-UK (Grant IDs: MR/Y00333
 
 ### Folders
 
--   *data*: this folder contains the daily exposure predictions of PM~2.5~ for a coastal area of South England over a 1x1 km grid. The data are split into yearly datasets including 2017, 2018, and 2019. The datasets were produced using a method described in a previously published work ([freely available here](https://www.sciencedirect.com/science/article/pii/S1309104224002496?via%3Dihub)). However, the same linkage process can be performed with any other environmental exposure dataset with similar features, simply by adapting the R code (particularly 02_exposure_series.R).
+-   *data*: this folder contains the daily exposure predictions of PM<sub>2.5</sub> for a coastal area of South England over a 1x1 km grid. The data are split into yearly datasets including 2017, 2018, and 2019. The datasets were produced using a method described in a previously published work ([freely available here](https://www.sciencedirect.com/science/article/pii/S1309104224002496?via%3Dihub)). However, the same linkage process can be performed with any other environmental exposure dataset with similar features, simply by adapting the R code (particularly 02_exposure_series.R).
 
 ### R code
 
 -   `01_resid_health_data.R`: the script defines sample datasets of individuals including information regarding residential histories located in the specific UK region (for graphical purposes).
 -   `02_exposure_series.R`: the script produces the linkage between residential histories and exposure series following steps 1) and 2) of the article.
--   `03_plots.R`: the script produces the following graphs: a map of the locations for all the subjects, a map for the residential locations corresponding with subject A, a plot of the full PM~2.5~ series at all the residential locations for subject A, and a plot of the final exposure series for subject A (step 2 of the article).
+-   `03_plots.R`: the script produces the following graphs: a map of the locations for all the subjects, a map for the residential locations corresponding with subject A, a plot of the full PM<sub>2.5</sub> series at all the residential locations for subject A, and a plot of the final exposure series for subject A (step 2 of the article).
