@@ -1,8 +1,6 @@
-# Reconstructing individual-level exposures in cohort analyses of environmental risks: an example with the UK Biobank
+# Sample code tutorial for environmental exposure linkage using residential data in cohort studies
 
 ------------------------------------------------------------------------
-
-## Sample code for environment and residential data linkage
 
 This repository stores the updated R code to reproduce a simpler and simulated version of the linkage process presented in the article:
 
